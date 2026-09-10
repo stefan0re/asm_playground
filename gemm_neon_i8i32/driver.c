@@ -35,6 +35,25 @@ extern void i8i32_neon_test(int8_t* i_a,
 
 extern void smmla_bench(int64_t reps);
 
+extern void sdot_simple( int8_t* i_a,
+                        int8_t* i_b,
+                        int32_t* io_c);
+
+extern void sdot_bench(int reps);
+
+// Potential GEMV performance (decode phase)
+void benchmark_sdot(){
+  int64_t l_reps = 200000000;
+  struct timeval l_start, l_end;
+  gettimeofday(&l_start, NULL);
+  smmla_bench(l_reps);
+  gettimeofday(&l_end, NULL);
+  double l_time = (l_end.tv_sec - l_start.tv_sec) + (l_end.tv_usec - l_start.tv_usec) / 1000000.0;
+  double flops = 4*8*30*l_reps;
+  double l_gflops = flops / (l_time * 1e9);
+  printf("Theoretical SDOT peak:\n");
+  printf("  Time: %f s, GFLOPS: %f\n", l_time, l_gflops);
+}
 
 void benchmark_smmla(){
   int64_t l_reps = 200000000;
@@ -49,7 +68,27 @@ void benchmark_smmla(){
   printf("  Time: %f s, GFLOPS: %f\n", l_time, l_gflops);
 }
 
-int main() {
+void run_gemv_sdot(){
+  int8_t*  l_a = (int8_t*)malloc(16 * sizeof(int8_t));
+  int8_t*  l_b = (int8_t*)malloc(16 * sizeof(int8_t));
+  int32_t* l_c = (int32_t*)malloc(4 * sizeof(int32_t));
+
+  for (int i = 0; i < 16; i++) {
+    l_a[i] = (int8_t)i;
+  }
+  for (int i = 0; i < 16; i++) {
+    l_b[i] = (int8_t) (i < 4) ? 1 : 0;
+  }
+
+  sdot_simple(l_a, l_b, l_c);
+
+  for(int i = 0; i < 4; i++){
+    printf("[%d]: %d\n", i, l_c[i]);
+  }
+
+}
+
+void run_gemm_smmla(){
   int M = 8;
   int N = 8;
   int K = 8;
@@ -100,11 +139,18 @@ int main() {
   double l_gflops = 2.0 * M * N * K * l_iter / (l_time * 1e9);
   printf("  Time: %f s, GFLOPS: %f\n", l_time, l_gflops);
 
-  benchmark_smmla();
   free(l_a);
   free(l_b);
   free(l_c);
   free(l_c_ref);
+}
+
+int main() {
+  
+  // benchmark_sdot();
+  run_gemv_sdot();
+  // benchmark_smmla();
+  // run_gemm_smmla();
 
   return 0;
 }
