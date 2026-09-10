@@ -1,10 +1,17 @@
 /**
  * 8x8x8 GEMM microkernel, int8 inputs / int32 accumulators, NEON SMMLA.
  */
+#ifdef __APPLE__
     .text
     .global _i8i32_neon_test
     .align 4
 _i8i32_neon_test:
+#else
+    .text
+    .global i8i32_neon_test
+    .align 4
+i8i32_neon_test:
+#endif
 
     // storing callee-saved registers
     stp  d8,  d9, [sp, #-16]!
@@ -127,11 +134,16 @@ _i8i32_neon_test:
 
     ret
 
-
-
+#ifdef __APPLE__
     .global _smmla_bench
     .align 4
 _smmla_bench:
+#else
+    .text
+    .global smmla_bench
+    .align 4
+smmla_bench:
+#endif
 
     // storing callee-saved registers
     stp  d8,  d9, [sp, #-16]!
