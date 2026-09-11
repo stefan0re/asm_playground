@@ -147,10 +147,10 @@ void run_gemm_smmla(){
 
 int main() {
   
-  // benchmark_sdot();
+  benchmark_sdot();
   run_gemv_sdot();
-  // benchmark_smmla();
-  // run_gemm_smmla();
+  benchmark_smmla();
+  run_gemm_smmla();
 
   return 0;
 }
