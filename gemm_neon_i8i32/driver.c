@@ -1,5 +1,3 @@
-// Compile with: gcc driver.c asm.s -o test -march=armv8.6-a+i8mm ; ./test
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>

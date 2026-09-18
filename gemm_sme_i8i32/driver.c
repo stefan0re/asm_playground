@@ -1,5 +1,3 @@
-// Compile with: gcc -march=v9-a+sme2 driver.c asm.s -o test
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>

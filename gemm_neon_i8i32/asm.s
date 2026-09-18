@@ -242,14 +242,11 @@ sdot_simple:
 #endif
 
     ld1 {v0.16b}, [x0]
-
     ld1 {v1.16b}, [x1]
+    eor v2.16b, v2.16b, v2.16b
 
     // broadcast
     dup v3.4s, v1.s[0]
-
-    eor v2.16b, v2.16b, v2.16b
-
     sdot v2.4s, v0.16b, v3.16b
 
     str q2, [x2]
